@@ -13,6 +13,15 @@
     "eject": "react-scripts eject",
     "build": "rimraf dist && NODE_ENV=production babel src/lib --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,__snapshots__"
   },
+  "license": "MIT",
+  "homepage": "https://github.com/ericsvendsen/react-utc-datepicker",
+  "bugs": {
+    "url": "https://github.com/ericsvendsen/react-utc-datepicker/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericsvendsen/react-utc-datepicker.git"
+  },
   "browserslist": [
     ">0.2%",
     "not dead",
