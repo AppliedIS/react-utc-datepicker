@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "font-awesome": "^4.7.0",
-    "moment": "^2.23.0",
-    "prop-types": "^15.6.2"
+    "moment": "^2.24.0",
+    "prop-types": "^15.6.2",
+    "shim-keyboard-event-key": "^1.0.2"
   }
 }

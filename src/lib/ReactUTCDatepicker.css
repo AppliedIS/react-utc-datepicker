@@ -1,8 +1,14 @@
 .react-utc-datepicker_input {
-    padding: 5px;
+    padding: 6px;
 }
 .react-utc-datepicker_button {
     padding: 7px;
+}
+.react-utc-datepicker_button.before {
+    margin-right: 2px;
+}
+.react-utc-datepicker_button.after {
+    margin-left: 2px;
 }
 .react-utc-datepicker_datepicker {
     position: absolute;

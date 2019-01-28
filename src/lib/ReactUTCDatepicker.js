@@ -1,22 +1,26 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import 'shim-keyboard-event-key';
 import * as moment from 'moment';
 
 import '../../node_modules/font-awesome/css/font-awesome.css';
-import './Datepicker.css';
+import './ReactUTCDatepicker.css';
 
-class DatePicker extends Component {
+class ReactUTCDatepicker extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            date: props.date,
+            button: typeof props.button === 'undefined' ? true : props.button,
+            buttonPosition: props.buttonPosition || 'after',
             showCalendar: false,
             days: [],
             dayNames: [],
             inputText: '', // keep track of the actual text of the input field
             tempDate: null, // moment object used for keeping track while cycling through months
             calendarTitle: '',
-            calendarPosition: 'angular-utc-datepicker_below'
+            calendarPosition: 'react-utc-datepicker_below'
         };
 
         this._getMomentDate = this._getMomentDate.bind(this);
@@ -57,7 +61,7 @@ class DatePicker extends Component {
                     month: month,
                     year: year,
                     enabled: 'react-utc-datepicker_enabled',
-                    selected: moment.utc(this.props.date, this.props.format).isSame(moment.utc(year + '-' + month + '-' + i, 'YYYY-M-D'), 'day') ?
+                    selected: moment.utc(this.state.date, this.props.format).isSame(moment.utc(year + '-' + month + '-' + i, 'YYYY-M-D'), 'day') ?
                         'react-utc-datepicker_selected' :
                         'react-utc-datepicker_unselected'
                 });
@@ -83,7 +87,8 @@ class DatePicker extends Component {
         }
 
         this.setState({
-            days: days
+            days: days,
+            calendarTitle: moment.utc(this.state.tempDate, this.format).format('MMMM YYYY')
         });
     }
 
@@ -114,20 +119,23 @@ class DatePicker extends Component {
     }
 
     _closeCalendar() {
-        if (document.activeElement) {
-            this.setState({
-                showCalendar: document.activeElement.className.includes('react-utc-datepicker_calendar-popup') ||
-                    document.activeElement.className.includes('react-utc-datepicker_input'),
-                tempDate: this._getMomentDate(this.props.date)
-            }, () => {
-                if (!this.state.showCalendar) {
-                    this.calendarTitle = this._getMomentDate(this.props.date).format('MMMM YYYY');
-                    if (this.state.inputText && this.state.inputText !== this.props.date) {
-                        this.el.nativeElement.value = this.props.date;
+        setTimeout(() => {
+            if (document.activeElement) {
+                const hasPopupClass = document.activeElement.className.includes('react-utc-datepicker_calendar-popup');
+                const hasInputClass = document.activeElement.className.includes('react-utc-datepicker_input');
+                this.setState({
+                    showCalendar: hasPopupClass || hasInputClass,
+                    tempDate: this._getMomentDate(this.state.date)
+                }, () => {
+                    if (!this.state.showCalendar) {
+                        this.calendarTitle = this._getMomentDate(this.state.date).format('MMMM YYYY');
+                        if (this.state.inputText && this.state.inputText !== this.state.date) {
+                            this.el.nativeElement.value = this.state.date;
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        }, 50);
     }
 
     _prevMonth() {
@@ -152,12 +160,13 @@ class DatePicker extends Component {
     };
 
     _selectDate(date) {
-        const currDate = moment.utc(this.props.date, this.props.format);
+        const currDate = moment.utc(this.state.date, this.props.format);
         const selectedDate = moment.utc(`${date.year}-${date.month}-${date.day} ${currDate.hour()}:${currDate.minute()}:
             ${currDate.second()}`, 'YYYY-M-D HH:mm:ss');
-        this.props.date = selectedDate.format(this.props.format);
+        const formattedDate = selectedDate.format(this.props.format);
         this.setState({
-            tempDate: this._getMomentDate(this.props.date),
+            date: formattedDate,
+            tempDate: this._getMomentDate(formattedDate),
             calendarTitle: this.state.tempDate.format('MMMM YYYY'),
             showCalendar: false
         }, () => {
@@ -178,25 +187,52 @@ class DatePicker extends Component {
     };
 
     _keydown(event) {
-        if (event.keyCode === 27) { // escape key
+        if (event.key === 'Escape') {
             this.setState({
                 showCalendar: false
             });
         }
     };
 
-    _onDateChange(value) {
-        const isValid = moment.utc(value, this.props.format).format(this.props.format) === value;
+    _onDateChange(event) {
+        const isValid = moment.utc(event.target.value, this.props.format).format(this.props.format) === event.target.value;
         if (isValid) {
             this.setState({
-                inputText: value,
-                calendarTitle: moment.utc(value, this.format).format('MMMM YYYY')
+                date: event.target.value,
+                inputText: event.target.value,
+                calendarTitle: moment.utc(event.target.value, this.format).format('MMMM YYYY')
             }, () => {
-                this.props.date = value;
-                this._generateCalendar(this._getMomentDate(value));
+                this._generateCalendar(this._getMomentDate(this.state.date));
             });
         }
     };
+
+    componentDidMount() {
+        let date = this.props.date;
+        if (typeof date === 'object') {
+            // date was passed in as a JS Date object
+            date = moment.utc(date).format(this.props.format);
+        } else {
+            const isValid = moment.utc(date, this.props.format).format(this.props.format) === date;
+            if (!isValid) {
+                // date does not match format, so try to force it
+                date = moment.utc(date).format(this.props.format);
+                if (!moment.utc(date).isValid()) {
+                    // moment is unable to parse the string
+                    throw new Error('Invalid date string specified');
+                }
+            }
+        }
+        this.setState({
+            date: date,
+            calendarTitle: this._getMomentDate(this.date).format('MMMM YYYY'),
+            tempDate: this._getMomentDate(this.date)
+        }, () => {
+            if (this.state.dayNames.length === 0) {
+                this._generateDayNames();
+            }
+        });
+    }
 
     render() {
         const dayNameEls = [];
@@ -216,6 +252,23 @@ class DatePicker extends Component {
                 </div>
             );
         });
+
+        const button = <button
+            className={`react-utc-datepicker_button ${this.state.buttonPosition}`}
+            onClick={this._openCalendar}
+            onBlur={this._closeCalendar}
+            onKeyDown={this._keydown}
+        >
+            <i className="fa fa-calendar"/>
+        </button>;
+
+        let buttonBefore = null;
+        let buttonAfter = null;
+        if (this.state.button && this.state.buttonPosition === 'before') {
+            buttonBefore = button;
+        } else if (this.state.button && this.state.buttonPosition === 'after') {
+            buttonAfter = button;
+        }
 
         const calendarPopupEl = this.state.showCalendar ?
             <div
@@ -256,7 +309,7 @@ class DatePicker extends Component {
                 </div>
                 <div className="react-utc-datepicker_calendar">
                     {dayEls}
-                    <div className="angular-utc-datepicker_clear"/>
+                    <div className="react-utc-datepicker_clear"/>
                 </div>
             </div> :
             null;
@@ -264,14 +317,7 @@ class DatePicker extends Component {
 
         return(
             <div className="react-utc-datepicker-container">
-                <button
-                    className="react-utc-datepicker_button"
-                    onClick={this._openCalendar}
-                    onBlur={this._closeCalendar}
-                    onKeyDown={this._keydown}
-                >
-                    <i className="fa fa-calendar"/>
-                </button>
+                {buttonBefore}
                 <input
                     ref={r => (this.el = r)}
                     className="react-utc-datepicker_input"
@@ -279,8 +325,9 @@ class DatePicker extends Component {
                     onFocus={this._openCalendar}
                     onBlur={this._closeCalendar}
                     onKeyDown={this._keydown}
-                    value={this.props.date}
+                    value={this.state.date}
                 />
+                {buttonAfter}
                 <div className="react-utc-datepicker_datepicker">
                     {calendarPopupEl}
                 </div>
@@ -289,9 +336,11 @@ class DatePicker extends Component {
     }
 }
 
-DatePicker.propTypes = {
+ReactUTCDatepicker.propTypes = {
     date: PropTypes.string,
-    format: PropTypes.string
+    format: PropTypes.string,
+    button: PropTypes.bool,
+    buttonPosition: PropTypes.string
 };
 
-export default DatePicker;
+export default ReactUTCDatepicker;

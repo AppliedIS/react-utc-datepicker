@@ -1,3 +1,3 @@
-import Datepicker from './Datepicker';
+import ReactUTCDatepicker from './ReactUTCDatepicker';
 
-export {Datepicker};
+export {ReactUTCDatepicker};
