@@ -14,7 +14,6 @@ A simple React datepicker component that exclusively uses UTC.
 * `format` option, for formatting date (and time, if necessary); defaults to `'YYYY-MM-DD'`. Uses [Moment](http://momentjs.com/docs/#/displaying/format/) formatting.
 * `button` option, for showing/hiding a button which opens the calendar popup (defaults to `true`)
 * `buttonPosition` option, possible values are `before` and `after` (defaults to `after`)
-* `dateChange` event for handling when the input text is updated or when a date is selected from the calendar popup
 
 ## Examples
 ```
