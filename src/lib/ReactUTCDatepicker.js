@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import 'shim-keyboard-event-key';
 import * as moment from 'moment';
 
-import '../../node_modules/font-awesome/css/font-awesome.css';
+import 'font-awesome/css/font-awesome.css';
 import './ReactUTCDatepicker.css';
 
 class ReactUTCDatepicker extends Component {
