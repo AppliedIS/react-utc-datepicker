@@ -9,7 +9,7 @@ const font = '\'Segoe UI\', \'Open Sans\', \'Helvetica Neue\', sans-serif';
 const App = () => (
     <div style={{width: 640, margin: '15px auto', fontFamily: font, fontSize: '15px'}}>
         <h1>React UTC Datepicker</h1>
-        <ReactUTCDatepicker date={myDate} format={myFormat}/>
+        <ReactUTCDatepicker date={myDate} format={myFormat} onChange={value => { console.log(value); }}/>
     </div>
 );
 

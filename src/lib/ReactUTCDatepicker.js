@@ -171,6 +171,7 @@ class ReactUTCDatepicker extends Component {
             showCalendar: false
         }, () => {
             this._generateCalendar(this.state.tempDate);
+            this.props.onChange(formattedDate);
         });
     };
 
@@ -196,15 +197,17 @@ class ReactUTCDatepicker extends Component {
 
     _onDateChange(event) {
         const isValid = moment.utc(event.target.value, this.props.format).format(this.props.format) === event.target.value;
-        if (isValid) {
-            this.setState({
-                date: event.target.value,
-                inputText: event.target.value,
-                calendarTitle: moment.utc(event.target.value, this.format).format('MMMM YYYY')
-            }, () => {
+        const title = isValid ? moment.utc(event.target.value, this.format).format('MMMM YYYY') : this.state.calendarTitle;
+        this.setState({
+            date: event.target.value,
+            inputText: event.target.value,
+            calendarTitle: title
+        }, () => {
+            if (isValid) {
                 this._generateCalendar(this._getMomentDate(this.state.date));
-            });
-        }
+                this.props.onChange(this.state.date);
+            }
+        });
     };
 
     componentDidMount() {
@@ -340,7 +343,8 @@ ReactUTCDatepicker.propTypes = {
     date: PropTypes.string,
     format: PropTypes.string,
     button: PropTypes.bool,
-    buttonPosition: PropTypes.string
+    buttonPosition: PropTypes.string,
+    onChange: PropTypes.func
 };
 
 export default ReactUTCDatepicker;
