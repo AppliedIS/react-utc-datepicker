@@ -119,6 +119,10 @@ class ReactUTCDatepicker extends Component {
     }
 
     _closeCalendar() {
+        const isValid = moment.utc(this.state.date, this.props.format).format(this.props.format) === this.state.date;
+        if (!isValid) {
+            this.props.onChange('Invalid date');
+        }
         setTimeout(() => {
             if (document.activeElement) {
                 const hasPopupClass = document.activeElement.className.includes('react-utc-datepicker_calendar-popup');
