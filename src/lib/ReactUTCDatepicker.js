@@ -107,24 +107,25 @@ class ReactUTCDatepicker extends Component {
 
     _openCalendar(event) {
         const rect = event.target.getBoundingClientRect();
-        const calendarPosition = window.innerHeight - rect.bottom < 250 ?
-            'react-utc-datepicker_above' :
-            'react-utc-datepicker_below';
-        this.setState({
-            showCalendar: true,
-            calendarPosition: calendarPosition
-        }, () => {
-            this._generateCalendar(this._getMomentDate(this.state.tempDate));
-        });
+        setTimeout(() => {
+            const calendarPosition = window.innerHeight - rect.bottom < 250 ?
+                'react-utc-datepicker_above' :
+                'react-utc-datepicker_below';
+            this.setState({
+                showCalendar: true,
+                calendarPosition: calendarPosition
+            }, () => {
+                this._generateCalendar(this._getMomentDate(this.state.tempDate));
+            });
+        }, 50)
     }
 
     _closeCalendar() {
         setTimeout(() => {
             if (document.activeElement) {
                 const hasPopupClass = document.activeElement.className.includes('react-utc-datepicker_calendar-popup');
-                const hasInputClass = document.activeElement.className.includes('react-utc-datepicker_input');
                 this.setState({
-                    showCalendar: hasPopupClass || hasInputClass,
+                    showCalendar: hasPopupClass,
                     tempDate: this._getMomentDate(this.state.date)
                 }, () => {
                     if (!this.state.showCalendar) {
