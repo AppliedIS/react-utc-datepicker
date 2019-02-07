@@ -233,8 +233,8 @@ class ReactUTCDatepicker extends Component {
         }
         this.setState({
             date: date,
-            calendarTitle: this._getMomentDate(this.date).format('MMMM YYYY'),
-            tempDate: this._getMomentDate(this.date)
+            calendarTitle: this._getMomentDate(this.state.date).format('MMMM YYYY'),
+            tempDate: this._getMomentDate(this.state.date)
         }, () => {
             if (this.state.dayNames.length === 0) {
                 this._generateDayNames();
