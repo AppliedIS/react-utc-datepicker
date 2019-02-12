@@ -1,16 +1,37 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {render} from 'react-dom';
 import {ReactUTCDatepicker} from './lib';
 import * as moment from 'moment';
 
-const myFormat = 'YYYY-MM-DD HH:mm:ss[Z]';
-const myDate = moment.utc().format(myFormat);
-const font = '\'Segoe UI\', \'Open Sans\', \'Helvetica Neue\', sans-serif';
-const App = () => (
-    <div style={{width: 640, margin: '15px auto', fontFamily: font, fontSize: '15px'}}>
-        <h1>React UTC Datepicker</h1>
-        <ReactUTCDatepicker date={myDate} format={myFormat} onChange={value => { console.log(value); }}/>
-    </div>
-);
+class Index extends Component {
+    constructor(props) {
+        super(props);
 
-render(<App/>, document.getElementById('root'));
+        this.myFormat = 'YYYY-MM-DD HH:mm:ss[Z]';
+        this.font = '\'Segoe UI\', \'Open Sans\', \'Helvetica Neue\', sans-serif';
+
+        this.state = {
+            date: moment.utc().format(this.myFormat)
+        };
+
+        this._changeDate = this._changeDate.bind(this);
+    }
+
+    _changeDate() {
+        this.setState({
+            date: moment.utc().format(this.myFormat)
+        });
+    }
+
+    render() {
+        return(
+            <div style={{width: 640, margin: '15px auto', fontFamily: this.font, fontSize: '15px'}}>
+                <h1>React UTC Datepicker</h1>
+                <ReactUTCDatepicker date={this.state.date} format={this.myFormat} onChange={value => { console.log(value); }}/>
+                <button type="button" onClick={this._changeDate}>Set date to now</button>
+            </div>
+        );
+    }
+}
+
+render(<Index/>, document.getElementById('root'));

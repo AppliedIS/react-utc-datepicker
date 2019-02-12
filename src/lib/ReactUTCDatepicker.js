@@ -242,6 +242,15 @@ class ReactUTCDatepicker extends Component {
         });
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.date !== this.props.date || prevProps.format !== this.props.format) {
+            this.setState({
+                date: this.props.date,
+                format: this.props.format
+            });
+        }
+    }
+
     render() {
         const dayNameEls = [];
         this.state.dayNames.forEach((name, idx) => {
